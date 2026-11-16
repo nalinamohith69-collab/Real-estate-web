@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LuxEstate | Premium Luxury Real Estate</title>
+  <meta name="description" content="Discover the world's most exclusive luxury properties. LuxEstate connects discerning buyers, sellers, and renters with premier real estate opportunities worldwide." />
+  <meta property="og:title" content="LuxEstate | Premium Luxury Real Estate" />
+  <meta property="og:description" content="Your gateway to the world's most exclusive properties." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="store.js"></script>
+  <script>
+    // Auth guard — redirect to login if not authenticated
+    (function() {
+      if (!LuxStore.isAuthenticated()) {
+        window.location.replace('login.html');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="#home" class="nav-logo" aria-label="LuxEstate Home">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Lux<span class="gold">Estate</span></span>
+      </a>
+
+      <ul class="nav-links" id="nav-links" role="list">
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#services" class="nav-link">Services</a></li>
+        <li><a href="#listings" class="nav-link">Listings</a></li>
+        <li><a href="#calculator" class="nav-link">Calculator</a></li>
+        <li><a href="#team" class="nav-link">Team</a></li>
+        <li><a href="#testimonials" class="nav-link">Reviews</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+
+      <div class="nav-user-area" id="nav-user-area" style="display:flex;align-items:center;gap:12px;">
+        <!-- Saved Properties Trigger -->
+        <button id="fav-trigger-btn" onclick="toggleFavDrawer()" class="btn btn-outline btn-sm" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-color:rgba(201,168,76,0.35);color:var(--gold);" title="View Saved Properties">
+          <span>♥</span> Saved
+          <span id="nav-fav-badge" class="fav-badge-count" style="display:none;">0</span>
+        </button>
+
+        <!-- Admin Portal shortcut if admin -->
+        <a href="admin.html" id="nav-admin-link" class="btn btn-gold btn-sm" style="display:none;padding:6px 12px;font-size:.8rem;font-weight:700;">
+          🛡️ Admin Portal
+        </a>
+
+        <!-- Logged-in Username -->
+        <span class="nav-username" id="nav-username" style="font-size:.84rem;color:#c9a84c;font-weight:600;"></span>
+
+        <button onclick="luxLogout()" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:#c9a84c;padding:6px 12px;border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(201,168,76,0.22)'" onmouseout="this.style.background='rgba(201,168,76,0.1)'">
+          Sign Out
+        </button>
+      </div>
+
+      <button class="hamburger" id="hamburger-btn" aria-label="Toggle mobile menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== MOBILE MENU ===== -->
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <div id="mobile-user-area" style="padding:14px 20px;border-bottom:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <span id="mobile-username" style="color:var(--gold);font-weight:600;font-size:.9rem;">👤 Guest</span>
+      <span style="font-size:.7rem;padding:2px 8px;border-radius:12px;background:rgba(201,168,76,0.15);color:var(--gold);font-weight:700;">VIP CLIENT</span>
+    </div>
+    <ul role="list">
+      <li><a href="#about" class="mobile-link">About</a></li>
+      <li><a href="#services" class="mobile-link">Services</a></li>
+      <li><a href="#listings" class="mobile-link">Listings</a></li>
+      <li><a href="#calculator" class="mobile-link">Mortgage Calculator</a></li>
+      <li><a href="#team" class="mobile-link">Team</a></li>
+      <li><a href="#testimonials" class="mobile-link">Reviews</a></li>
+      <li><a href="#contact" class="mobile-link">Contact</a></li>
+      <li>
+        <button onclick="toggleFavDrawer();" class="btn btn-outline" style="width:100%;margin-bottom:8px;justify-content:center;color:var(--gold);">
+          ♥ Saved Properties <span id="mobile-fav-badge" class="fav-badge-count" style="display:none;">0</span>
+        </button>
+      </li>
+      <li id="mobile-admin-link" style="display:none;">
+        <a href="admin.html" class="btn btn-gold" style="width:100%;text-align:center;justify-content:center;margin-bottom:8px;">
+          🛡️ Admin Dashboard
+        </a>
+      </li>
+      <li>
+        <button onclick="luxLogout()" style="width:100%;background:rgba(224,90,106,0.15);border:1px solid rgba(224,90,106,0.3);color:#e05a6a;padding:11px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;text-align:center;">
+          Sign Out
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="home" aria-label="Hero section">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-particles" id="hero-particles" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>Premium Real Estate Since 2004</span>
+      </div>
+      <h1 class="hero-title">
+        Find Your
+        <span class="hero-title-accent">Dream Home</span>
+        In Paradise
+      </h1>
+      <p class="hero-subtitle">
+        Explore the world's most exclusive luxury properties curated by our elite team of real estate specialists.
+      </p>
+
+      <div class="hero-search" role="search">
+        <div class="search-tabs">
+          <button class="search-tab active" id="tab-buy" data-filter="buy">Buy</button>
+          <button class="search-tab" id="tab-rent" data-filter="rent">Rent</button>
+          <button class="search-tab" id="tab-invest" data-filter="invest">Invest</button>
+        </div>
+        <div class="search-bar">
+          <div class="search-field">
+            <label for="location-input">Location</label>
+            <input type="text" id="location-input" placeholder="City, neighborhood, or ZIP" />
+          </div>
+          <div class="search-divider"></div>
+          <div class="search-field">
+            <label for="type-select">Property Type</label>
+            <select id="type-select">
+              <option value="">Any Type</option>
+              <option value="villa">Villa</option>
+              <option value="penthouse">Penthouse</option>
+              <option value="mansion">Mansion</option>
+              <option value="condo">Condo</option>
+              <option value="townhouse">Townhouse</option>
+              <option value="loft">Loft</option>
+            </select>
+          </div>
+          <div class="search-divider"></div>
+          <div class="search-field">
+            <label for="budget-select">Budget</label>
+            <select id="budget-select">
+              <option value="">Any Budget</option>
+              <option value="1m">Under $1M</option>
+              <option value="5m">$1M – $5M</option>
+              <option value="10m">$5M – $10M</option>
+              <option value="10m+">$10M+</option>
+            </select>
+          </div>
+          <button class="btn btn-gold search-btn" id="search-btn" aria-label="Search properties">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Search
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-stats" aria-label="Agency statistics">
+        <div class="stat-item">
+          <span class="stat-number" data-target="2400">0</span><span class="stat-suffix">+</span>
+          <span class="stat-label">Properties Sold</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="98">0</span><span class="stat-suffix">%</span>
+          <span class="stat-label">Client Satisfaction</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="20">0</span><span class="stat-suffix">+</span>
+          <span class="stat-label">Years Experience</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="150">0</span><span class="stat-suffix">+</span>
+          <span class="stat-label">Elite Agents</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll" aria-label="Scroll down">
+      <a href="#about" class="scroll-indicator">
+        <div class="scroll-dot"></div>
+        <span>Scroll to explore</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== MARQUEE ===== -->
+  <div class="marquee-section" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Luxury Villas</span><span class="marquee-sep">✦</span>
+      <span>Penthouse Suites</span><span class="marquee-sep">✦</span>
+      <span>Beachfront Estates</span><span class="marquee-sep">✦</span>
+      <span>Mountain Retreats</span><span class="marquee-sep">✦</span>
+      <span>Urban Residences</span><span class="marquee-sep">✦</span>
+      <span>Private Islands</span><span class="marquee-sep">✦</span>
+      <span>Investment Portfolios</span><span class="marquee-sep">✦</span>
+      <span>Luxury Villas</span><span class="marquee-sep">✦</span>
+      <span>Penthouse Suites</span><span class="marquee-sep">✦</span>
+      <span>Beachfront Estates</span><span class="marquee-sep">✦</span>
+      <span>Mountain Retreats</span><span class="marquee-sep">✦</span>
+      <span>Urban Residences</span><span class="marquee-sep">✦</span>
+    </div>
+  </div>
+
+  <!-- ===== ABOUT ===== -->
+  <section class="about section" id="about" aria-labelledby="about-heading">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual">
+          <div class="about-img-main reveal">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80" alt="LuxEstate headquarters luxury building" loading="lazy" />
+            <div class="img-badge">
+              <span class="badge-num">20+</span>
+              <span class="badge-txt">Years of Excellence</span>
+            </div>
+          </div>
+          <div class="about-img-secondary reveal reveal-delay-1">
+            <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80" alt="Luxury villa showcase" loading="lazy" />
+          </div>
+          <div class="about-gold-bar" aria-hidden="true"></div>
+        </div>
+        <div class="about-content">
+          <div class="section-tag reveal">Our Heritage</div>
+          <h2 class="section-title reveal reveal-delay-1" id="about-heading">
+            Redefining Ultra-Luxury Real Estate Since 2004
+          </h2>
+          <p class="about-text reveal reveal-delay-2">
+            At LuxEstate, we believe that finding the perfect home is more than a transaction — it's a transformative journey. For over two decades, we've guided discerning clients through the world's most exclusive real estate markets with unparalleled expertise, discretion, and white-glove service.
+          </p>
+          <p class="about-text reveal reveal-delay-2">
+            Our global network of 150+ elite agents spans 30+ countries, ensuring that wherever your dream property lies, we have the local knowledge and international reach to make it yours.
+          </p>
+          <div class="about-values reveal reveal-delay-3">
+            <div class="value-card">
+              <div class="value-icon" aria-hidden="true">💎</div>
+              <div>
+                <h3>Transparency</h3>
+                <p>Full disclosure, zero hidden fees, complete peace of mind.</p>
+              </div>
+            </div>
+            <div class="value-card">
+              <div class="value-icon" aria-hidden="true">👑</div>
+              <div>
+                <h3>Exclusivity</h3>
+                <p>Access to off-market and ultra-premium listings worldwide.</p>
+              </div>
+            </div>
+            <div class="value-card">
+              <div class="value-icon" aria-hidden="true">⭐</div>
+              <div>
+                <h3>Excellence</h3>
+                <p>Award-winning brokerage setting the global luxury benchmark.</p>
+              </div>
+            </div>
+          </div>
+          <a href="#contact" class="btn btn-gold reveal reveal-delay-3" id="about-cta-btn">Schedule a Private Consultation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES ===== -->
+  <section class="services section" id="services" aria-labelledby="services-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag reveal">What We Offer</div>
+        <h2 class="section-title centered reveal reveal-delay-1" id="services-heading">
+          Comprehensive Real Estate Services
+        </h2>
+        <p class="section-subtitle reveal reveal-delay-2">
+          From first consultation to final handover, we manage every detail of your real estate journey.
+        </p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card reveal" id="service-buy">
+          <div class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 20L24 6L42 20V42H30V30H18V42H6V20Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Buy Property</h3>
+          <p>Navigate the luxury buying market with confidence. Our agents provide in-depth market analysis, exclusive access, and expert negotiation to secure your ideal property at the right price.</p>
+          <ul class="service-features">
+            <li>Personalized property matching</li>
+            <li>Market analysis & valuations</li>
+            <li>Legal & financial guidance</li>
+          </ul>
+          <a href="#contact" class="service-link">Inquire Now →</a>
+        </div>
+
+        <div class="service-card service-card--featured reveal reveal-delay-1" id="service-sell">
+          <div class="service-badge-card">Premier Representation</div>
+          <div class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M24 4L44 14V34L24 44L4 34V14L24 4Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M24 4V44M4 14L44 34M44 14L4 34" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+            </svg>
+          </div>
+          <h3>Sell Property</h3>
+          <p>Maximize your property's value with our proven marketing strategies. Cinematic 4K video tours, international architectural press placements, and access to our global buyer network.</p>
+          <ul class="service-features">
+            <li>Professional staging & photography</li>
+            <li>Global marketing campaigns</li>
+            <li>Top-dollar discrete negotiation</li>
+          </ul>
+          <a href="#contact" class="service-link">List Your Estate →</a>
+        </div>
+
+        <div class="service-card reveal reveal-delay-2" id="service-rent">
+          <div class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="18" width="36" height="24" rx="2" stroke="currentColor" stroke-width="2.5"/>
+              <path d="M16 18V12C16 8.686 19.134 6 24 6C28.866 6 32 8.686 32 12V18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="24" cy="30" r="4" stroke="currentColor" stroke-width="2.5"/>
+            </svg>
+          </div>
+          <h3>Rent &amp; Lease</h3>
+          <p>Whether you seek a seasonal beachfront retreat or a prestigious city residence, our curated portfolio of premium rentals offers unmatched variety with full concierge support.</p>
+          <ul class="service-features">
+            <li>Flexible luxury lease terms</li>
+            <li>Fully designer furnished options</li>
+            <li>Concierge management</li>
+          </ul>
+          <a href="#contact" class="service-link">Browse Rentals →</a>
+        </div>
+
+        <div class="service-card reveal reveal-delay-3" id="service-invest">
+          <div class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 36L18 26L26 32L40 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="40" cy="12" r="3" fill="currentColor"/>
+              <path d="M6 42H42" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3>Investment Advisory</h3>
+          <p>Grow your wealth with strategic real estate assets. Our financial analysts identify high-yield opportunities, emerging international markets, and portfolio diversification strategies.</p>
+          <ul class="service-features">
+            <li>ROI & yield projections</li>
+            <li>Emerging market insights</li>
+            <li>Portfolio asset management</li>
+          </ul>
+          <a href="#contact" class="service-link">Consult Analysts →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== LISTINGS ===== -->
+  <section class="listings section" id="listings" aria-labelledby="listings-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag reveal">Our Portfolio</div>
+        <h2 class="section-title centered reveal reveal-delay-1" id="listings-heading">
+          Featured Luxury Properties
+        </h2>
+        <p class="section-subtitle reveal reveal-delay-2">
+          Handpicked luxury residences that represent the pinnacle of modern architecture and prestigious living.
+        </p>
+      </div>
+
+      <div class="listings-filters reveal reveal-delay-2" role="tablist" aria-label="Filter properties by type">
+        <button class="filter-btn active" data-filter="all" id="filter-all" role="tab" aria-selected="true">All Properties</button>
+        <button class="filter-btn" data-filter="buy" id="filter-buy" role="tab" aria-selected="false">For Sale</button>
+        <button class="filter-btn" data-filter="rent" id="filter-rent" role="tab" aria-selected="false">For Rent</button>
+        <button class="filter-btn" data-filter="new" id="filter-new" role="tab" aria-selected="false">New Launches</button>
+      </div>
+
+      <!-- Live Results Counter -->
+      <div id="listings-counter" style="text-align:center;color:var(--gold);font-size:.9rem;margin-bottom:28px;"></div>
+
+      <!-- Dynamic Properties Grid (Populated by script.js from LuxStore) -->
+      <div class="properties-grid" id="properties-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MORTGAGE & AFFORDABILITY CALCULATOR ===== -->
+  <section class="calc-section section" id="calculator" aria-labelledby="calc-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag reveal">Financial Planning</div>
+        <h2 class="section-title centered reveal reveal-delay-1" id="calc-heading">
+          Luxury Mortgage &amp; Payment Calculator
+        </h2>
+        <p class="section-subtitle reveal reveal-delay-2">
+          Estimate your monthly financing, property taxes, insurance, and interest rates for premier acquisitions.
+        </p>
+      </div>
+
+      <div class="calc-container reveal reveal-delay-2">
+        <div class="calc-controls">
+          <div class="calc-slider-box">
+            <div class="calc-slider-header">
+              <span class="calc-slider-label">Property Purchase Price</span>
+              <span class="calc-slider-val" id="calc-price-display">$8,500,000</span>
+            </div>
+            <input type="range" class="calc-range-input" id="calc-price" min="1000000" max="35000000" step="250000" value="8500000" />
+            <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-4);margin-top:4px;">
+              <span>$1M</span><span>$15M</span><span>$35M+</span>
+            </div>
+          </div>
+
+          <div class="calc-slider-box">
+            <div class="calc-slider-header">
+              <span class="calc-slider-label">Down Payment</span>
+              <span class="calc-slider-val" id="calc-down-display">20% ($1,700,000)</span>
+            </div>
+            <input type="range" class="calc-range-input" id="calc-down" min="10" max="50" step="5" value="20" />
+            <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-4);margin-top:4px;">
+              <span>10%</span><span>25%</span><span>50%</span>
+            </div>
+          </div>
+
+          <div class="calc-slider-box">
+            <div class="calc-slider-header">
+              <span class="calc-slider-label">Interest Rate</span>
+              <span class="calc-slider-val" id="calc-rate-display">5.8%</span>
+            </div>
+            <input type="range" class="calc-range-input" id="calc-rate" min="3.0" max="9.0" step="0.1" value="5.8" />
+            <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-4);margin-top:4px;">
+              <span>3.0%</span><span>6.0%</span><span>9.0%</span>
+            </div>
+          </div>
+
+          <div class="calc-slider-box">
+            <span class="calc-slider-label" style="display:block;margin-bottom:10px;">Loan Term</span>
+            <div style="display:flex;gap:16px;">
+              <label style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.88rem;">
+                <input type="radio" name="calc-term" value="30" checked style="accent-color:var(--gold);" /> 30-Year Fixed
+              </label>
+              <label style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.88rem;">
+                <input type="radio" name="calc-term" value="15" style="accent-color:var(--gold);" /> 15-Year Fixed
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-results-card">
+          <div class="calc-monthly-box">
+            <div class="calc-monthly-label">Estimated Total Monthly Payment</div>
+            <div class="calc-monthly-num" id="calc-monthly-total">$49,612</div>
+            <div style="font-size:0.78rem;color:var(--text-3);margin-top:4px;">Includes Principal, Interest, Taxes &amp; HOA</div>
+          </div>
+
+          <div class="calc-breakdown-list">
+            <div class="calc-breakdown-row">
+              <span><span class="calc-dot" style="background:var(--gold);"></span> Principal &amp; Interest</span>
+              <span id="calc-pi-val">$39,890</span>
+            </div>
+            <div class="calc-breakdown-row">
+              <span><span class="calc-dot" style="background:#5b9cf6;"></span> Property Taxes (~1.1%)</span>
+              <span id="calc-tax-val">$7,792</span>
+            </div>
+            <div class="calc-breakdown-row">
+              <span><span class="calc-dot" style="background:#3ecf8e;"></span> Homeowners Insurance</span>
+              <span id="calc-ins-val">$2,479</span>
+            </div>
+            <div class="calc-breakdown-row">
+              <span><span class="calc-dot" style="background:#f5a623;"></span> Luxury HOA &amp; Amenities</span>
+              <span id="calc-hoa-val">$1,800</span>
+            </div>
+          </div>
+
+          <div style="margin-top:24px;">
+            <a href="#contact" class="btn btn-gold" style="width:100%;justify-content:center;padding:12px;">Speak with Private Lending Advisor</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHY US ===== -->
+  <section class="why-us section" id="why-us" aria-labelledby="why-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag reveal">Why LuxEstate</div>
+        <h2 class="section-title centered reveal reveal-delay-1" id="why-heading">
+          The LuxEstate Distinction
+        </h2>
+      </div>
+      <div class="why-grid">
+        <div class="why-card reveal" id="why-global">
+          <div class="why-icon" aria-hidden="true">🌐</div>
+          <h3>Global Network</h3>
+          <p>30+ country presence with 150+ elite agents. Access off-market listings and international buyers unreachable elsewhere.</p>
+        </div>
+        <div class="why-card reveal reveal-delay-1" id="why-concierge">
+          <div class="why-icon" aria-hidden="true">🛎️</div>
+          <h3>White-Glove Concierge</h3>
+          <p>Dedicated personal advisors, 24/7 support, private helicopter showings, and bespoke acquisition assistance.</p>
+        </div>
+        <div class="why-card reveal reveal-delay-2" id="why-tech">
+          <div class="why-icon" aria-hidden="true">📊</div>
+          <h3>Market Intelligence</h3>
+          <p>Data-driven market valuation, price appreciation forecasts, and proprietary insights that empower our clients.</p>
+        </div>
+        <div class="why-card reveal reveal-delay-3" id="why-secure">
+          <div class="why-icon" aria-hidden="true">🔒</div>
+          <h3>Absolute Discretion</h3>
+          <p>Complete confidentiality for high-net-worth individuals. Your transaction privacy is our highest priority.</p>
+        </div>
+        <div class="why-card reveal" id="why-legal">
+          <div class="why-icon" aria-hidden="true">⚖️</div>
+          <h3>Legal &amp; Tax Structuring</h3>
+          <p>In-house legal team handles cross-border contracts, title checks, entity structures, and international tax treaties.</p>
+        </div>
+        <div class="why-card reveal reveal-delay-1" id="why-invest-why">
+          <div class="why-icon" aria-hidden="true">📈</div>
+          <h3>Proven Capital Growth</h3>
+          <p>Our advisory portfolios consistently outperform luxury real estate indexes by 23% over a 5-year holding period.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATS ===== -->
+  <section class="stats-section" id="stats" aria-label="Agency key statistics">
+    <div class="stats-bg"></div>
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stats-card reveal" id="stat-sold">
+          <div class="stat-icon" aria-hidden="true">🏡</div>
+          <div class="counter" data-target="2400">0</div><span class="counter-suffix">+</span>
+          <p>Properties Sold</p>
+        </div>
+        <div class="stats-card reveal reveal-delay-1" id="stat-clients">
+          <div class="stat-icon" aria-hidden="true">👥</div>
+          <div class="counter" data-target="3800">0</div><span class="counter-suffix">+</span>
+          <p>Happy Clients</p>
+        </div>
+        <div class="stats-card reveal reveal-delay-2" id="stat-volume">
+          <div class="stat-icon" aria-hidden="true">💰</div>
+          <div class="counter-prefix">$</div><div class="counter" data-target="12">0</div><span class="counter-suffix">B+</span>
+          <p>Sales Volume</p>
+        </div>
+        <div class="stats-card reveal reveal-delay-3" id="stat-awards">
+          <div class="stat-icon" aria-hidden="true">🏆</div>
+          <div class="counter" data-target="47">0</div><span class="counter-suffix">+</span>
+          <p>Industry Awards</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TEAM ===== -->
+  <section class="team section" id="team" aria-labelledby="team-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag reveal">Meet the Experts</div>
+        <h2 class="section-title centered reveal reveal-delay-1" id="team-heading">
+          Our Elite Senior Partners
+        </h2>
+        <p class="section-subtitle reveal reveal-delay-2">
+          Decades of proven transactions, insider access, and a passion for architectural masterpieces.
+        </p>
+      </div>
+      <div class="team-grid">
+        <div class="team-card reveal" id="agent-victoria">
+          <div class="team-img-wrap">
+            <div class="team-avatar" style="background: linear-gradient(135deg,#c9a84c,#8b6914);" aria-label="Victoria Sterling agent photo">
+              <span>VS</span>
+            </div>
+            <div class="team-social" aria-label="Victoria's social links">
+              <a href="#contact" aria-label="Contact">✉</a>
+            </div>
+          </div>
+          <div class="team-info">
+            <h3>Victoria Sterling</h3>
+            <span class="team-role">Senior Luxury Specialist</span>
+            <p>15+ years placing ultra-high-net-worth clients into Manhattan's most coveted penthouses and historic townhouses.</p>
+            <div class="team-stats">
+              <span><strong>$2.1B</strong> sold</span>
+              <span><strong>420+</strong> deals</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-card reveal reveal-delay-1" id="agent-james">
+          <div class="team-img-wrap">
+            <div class="team-avatar" style="background: linear-gradient(135deg,#4a6fa5,#1e3a5f);" aria-label="James Ashford agent photo">
+              <span>JA</span>
+            </div>
+            <div class="team-social" aria-label="James's social links">
+              <a href="#contact" aria-label="Contact">✉</a>
+            </div>
+          </div>
+          <div class="team-info">
+            <h3>James Ashford</h3>
+            <span class="team-role">International Director</span>
+            <p>Specializes in cross-border luxury transactions across London, Paris, Monaco, and Dubai prime enclaves.</p>
+            <div class="team-stats">
+              <span><strong>$3.5B</strong> sold</span>
+              <span><strong>650+</strong> deals</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-card reveal reveal-delay-2" id="agent-sophia">
+          <div class="team-img-wrap">
+            <div class="team-avatar" style="background: linear-gradient(135deg,#a84c6f,#5f1e3a);" aria-label="Sophia Laurent agent photo">
+              <span>SL</span>
+            </div>
+            <div class="team-social" aria-label="Sophia's social links">
+              <a href="#contact" aria-label="Contact">✉</a>
+            </div>
+          </div>
+          <div class="team-info">
+            <h3>Sophia Laurent</h3>
+            <span class="team-role">Investment Advisor</span>
+            <p>Former Wall Street investment banking analyst specializing in portfolio yield maximization and trophy acquisitions.</p>
+            <div class="team-stats">
+              <span><strong>$1.8B</strong> managed</span>
+              <span><strong>280+</strong> deals</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-card reveal reveal-delay-3" id="agent-marcus">
+          <div class="team-img-wrap">
+            <div class="team-avatar" style="background: linear-gradient(135deg,#4ca87a,#1e5f3a);" aria-label="Marcus Cole agent photo">
+              <span>MC</span>
+            </div>
+            <div class="team-social" aria-label="Marcus's social links">
+              <a href="#contact" aria-label="Contact">✉</a>
+            </div>
+          </div>
+          <div class="team-info">
+            <h3>Marcus Cole</h3>
+            <span class="team-role">West Coast Director</span>
+            <p>Southern California luxury authority with an unrivaled portfolio of private Malibu oceanfront estates and celebrity compounds.</p>
+            <div class="team-stats">
+              <span><strong>$2.7B</strong> sold</span>
+              <span><strong>390+</strong> deals</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testimonials section" id="testimonials" aria-labelledby="testimonials-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag reveal">Client Reviews</div>
+        <h2 class="section-title centered reveal reveal-delay-1" id="testimonials-heading">
+          Trusted by Discerning Clients
+        </h2>
+      </div>
+      <div class="testimonials-wrapper">
+        <div class="testimonials-track" id="testimonials-track" aria-live="polite">
+
+          <div class="testimonial-card" id="review-1">
+            <div class="stars" aria-label="5 star rating">★★★★★</div>
+            <p class="review-text">"LuxEstate found us a breathtaking penthouse in Manhattan that we never could have discovered on our own. Victoria was exceptional — patient, knowledgeable, and completely dedicated to our needs. Best investment we've ever made."</p>
+            <div class="reviewer">
+              <div class="reviewer-avatar" style="background: linear-gradient(135deg,#c9a84c,#6b4f1a);">RH</div>
+              <div>
+                <strong>Robert &amp; Helen Harrison</strong>
+                <span>New York, USA</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card" id="review-2">
+            <div class="stars" aria-label="5 star rating">★★★★★</div>
+            <p class="review-text">"The international reach of LuxEstate is unmatched. James helped us acquire a villa in Côte d'Azur and an apartment in Dubai seamlessly. The discretion and professionalism were exactly what we expected at this level."</p>
+            <div class="reviewer">
+              <div class="reviewer-avatar" style="background: linear-gradient(135deg,#4a6fa5,#1e3a5f);">AL</div>
+              <div>
+                <strong>Antoine &amp; Isabelle Laurent</strong>
+                <span>Monaco</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card" id="review-3">
+            <div class="stars" aria-label="5 star rating">★★★★★</div>
+            <p class="review-text">"Sophia's investment insights are absolutely invaluable. Our real estate portfolio has grown 31% in two years under her guidance. She's not just an agent — she's a true strategic partner in wealth building."</p>
+            <div class="reviewer">
+              <div class="reviewer-avatar" style="background: linear-gradient(135deg,#4ca87a,#1a5f3a);">DK</div>
+              <div>
+                <strong>David Kim</strong>
+                <span>San Francisco, USA</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card" id="review-4">
+            <div class="stars" aria-label="5 star rating">★★★★★</div>
+            <p class="review-text">"Selling our Malibu property was a daunting prospect. Marcus's marketing strategy attracted 14 qualified offers within 10 days. We sold for 12% above asking price. Truly extraordinary service."</p>
+            <div class="reviewer">
+              <div class="reviewer-avatar" style="background: linear-gradient(135deg,#a84c6f,#5f1a3a);">SM</div>
+              <div>
+                <strong>Sarah Mitchell</strong>
+                <span>Los Angeles, USA</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="testimonials-nav" aria-label="Testimonial navigation">
+          <button class="testi-prev" id="testi-prev-btn" aria-label="Previous testimonial">‹</button>
+          <div class="testi-dots" id="testi-dots" role="tablist" aria-label="Testimonial indicators"></div>
+          <button class="testi-next" id="testi-next-btn" aria-label="Next testimonial">›</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section class="contact section" id="contact" aria-labelledby="contact-heading">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="section-tag reveal">Bespoke Guidance</div>
+          <h2 class="section-title reveal reveal-delay-1" id="contact-heading">
+            Connect With Our Partners
+          </h2>
+          <p class="about-text reveal reveal-delay-2">
+            Whether you're acquiring, divesting, or expanding an international portfolio — our senior partners provide the discreet counsel you deserve.
+          </p>
+          <div class="contact-details reveal reveal-delay-3">
+            <div class="contact-item" id="contact-phone">
+              <div class="contact-icon" aria-hidden="true">📞</div>
+              <div>
+                <strong>Private Line</strong>
+                <span>+1 (800) 589-LUXE</span>
+              </div>
+            </div>
+            <div class="contact-item" id="contact-email">
+              <div class="contact-icon" aria-hidden="true">✉️</div>
+              <div>
+                <strong>Concierge Desk</strong>
+                <span>hello@luxestate.com</span>
+              </div>
+            </div>
+            <div class="contact-item" id="contact-address">
+              <div class="contact-icon" aria-hidden="true">📍</div>
+              <div>
+                <strong>Global Headquarters</strong>
+                <span>432 Park Avenue, Penthouse Floor, New York, NY 10022</span>
+              </div>
+            </div>
+            <div class="contact-item" id="contact-hours">
+              <div class="contact-icon" aria-hidden="true">🕒</div>
+              <div>
+                <strong>Client Service Hours</strong>
+                <span>Mon – Sat: 9:00 AM – 8:00 PM EST (24/7 VIP Concierge)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form-wrap reveal reveal-delay-2">
+          <form class="contact-form" id="contact-form" novalidate aria-label="Contact form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fname">First Name *</label>
+                <input type="text" id="fname" name="fname" placeholder="John" required autocomplete="given-name" />
+              </div>
+              <div class="form-group">
+                <label for="lname">Last Name</label>
+                <input type="text" id="lname" name="lname" placeholder="Doe" autocomplete="family-name" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" placeholder="john@example.com" required autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" autocomplete="tel" />
+            </div>
+            <div class="form-group">
+              <label for="interest">Primary Interest</label>
+              <select id="interest" name="interest">
+                <option value="buy">Acquiring a Luxury Property</option>
+                <option value="sell">Listing / Selling an Estate</option>
+                <option value="rent">Luxury Leasing &amp; Relocation</option>
+                <option value="invest">Portfolio &amp; Capital Advisory</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Confidential Notes</label>
+              <textarea id="message" name="message" rows="4" placeholder="Tell us about your architectural preferences, location, or private requirements..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-gold btn-full" id="form-submit-btn">
+              Send Private Inquiry
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+            </button>
+            <div class="form-success" id="form-success" aria-live="polite" role="status" hidden>
+              <span>✓</span> Thank you. A senior broker will be in touch shortly.
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer" id="footer">
+    <div class="footer-top">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href="#home" class="nav-logo" aria-label="LuxEstate">
+              <span class="logo-icon">◈</span>
+              <span class="logo-text">Lux<span class="gold">Estate</span></span>
+            </a>
+            <p>The world's premier luxury real estate agency — delivering unmatched service, exclusive access, and extraordinary results for over 20 years.</p>
+            <div class="footer-socials" aria-label="Social media">
+              <a href="#" aria-label="Instagram" class="footer-social-icon">IG</a>
+              <a href="#" aria-label="LinkedIn" class="footer-social-icon">IN</a>
+              <a href="#" aria-label="Twitter" class="footer-social-icon">X</a>
+              <a href="#" aria-label="YouTube" class="footer-social-icon">YT</a>
+            </div>
+          </div>
+
+          <div class="footer-links-col">
+            <h4>Properties</h4>
+            <ul role="list">
+              <li><a href="#listings" onclick="currentFilter.category='buy';renderProperties(currentFilter);">For Sale</a></li>
+              <li><a href="#listings" onclick="currentFilter.category='rent';renderProperties(currentFilter);">For Rent</a></li>
+              <li><a href="#listings" onclick="currentFilter.category='new';renderProperties(currentFilter);">New Launches</a></li>
+              <li><a href="#calculator">Mortgage Calculator</a></li>
+              <li><a href="javascript:void(0)" onclick="toggleFavDrawer()">Saved Properties</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-links-col">
+            <h4>Firm</h4>
+            <ul role="list">
+              <li><a href="#about">Our Story</a></li>
+              <li><a href="#team">Our Team</a></li>
+              <li><a href="#services">Services</a></li>
+              <li><a href="#testimonials">Reviews</a></li>
+              <li><a href="login.html">Client &amp; Admin Sign In</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-links-col">
+            <h4>Compliance</h4>
+            <ul role="list">
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Representation</a></li>
+              <li><a href="#">Equal Housing Opportunity</a></li>
+              <li><a href="#">GDPR &amp; Privacy</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-newsletter">
+            <h4>Private Market Intelligence</h4>
+            <p>Receive weekly off-market property alerts and confidential market reports.</p>
+            <form class="newsletter-form" id="newsletter-form" novalidate aria-label="Newsletter signup">
+              <input type="email" id="newsletter-email" placeholder="your@email.com" required aria-label="Email for newsletter" />
+              <button type="submit" id="newsletter-submit" aria-label="Subscribe to newsletter">→</button>
+            </form>
+            <p class="newsletter-note">Confidential. No spam. Unsubscribe any time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>© 2026 LuxEstate International. All rights reserved. Licensed Real Estate Broker.</p>
+        <p>Crafted with elegance for discerning clientele worldwide.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== MODAL: PROPERTY DETAILS & GALLERY ===== -->
+  <div class="lux-modal-overlay" id="prop-details-modal" onclick="handlePropModalClick(event)">
+    <div class="lux-modal-content">
+      <button class="lux-modal-close" onclick="closePropModal()" aria-label="Close">✕</button>
+      <div id="prop-details-mount">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: SCHEDULE VIP TOUR ===== -->
+  <div class="lux-modal-overlay" id="tour-modal" onclick="handleTourModalClick(event)">
+    <div class="lux-modal-content" style="max-width:540px;padding:32px;">
+      <button class="lux-modal-close" onclick="closeTourModal()" aria-label="Close">✕</button>
+      <div style="text-align:center;margin-bottom:20px;">
+        <span style="font-size:1.8rem;">🥂</span>
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--text-1);margin-top:6px;">Schedule a Private Tour</h3>
+        <p style="font-size:0.86rem;color:var(--text-3);margin-top:4px;" id="tour-prop-subtitle">Select your preferred viewing format &amp; time</p>
+      </div>
+
+      <form id="tour-form" onsubmit="submitTourBooking(event)">
+        <input type="hidden" id="tour-prop-name" />
+        <input type="hidden" id="tour-prop-id" />
+
+        <div class="form-group" style="margin-bottom:16px;">
+          <label style="font-size:.78rem;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:6px;">Tour Format</label>
+          <div style="display:flex;gap:10px;">
+            <label style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.85rem;">
+              <input type="radio" name="tour-format" value="In-Person VIP Tour" checked style="accent-color:var(--gold);" /> In-Person VIP
+            </label>
+            <label style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.85rem;">
+              <input type="radio" name="tour-format" value="Private 4K Virtual Walkthrough" style="accent-color:var(--gold);" /> 4K Virtual
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label style="font-size:.78rem;font-weight:600;color:var(--text-2);text-transform:uppercase;display:block;margin-bottom:6px;">Date</label>
+            <input type="date" id="tour-date" required style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;outline:none;" />
+          </div>
+          <div class="form-group">
+            <label style="font-size:.78rem;font-weight:600;color:var(--text-2);text-transform:uppercase;display:block;margin-bottom:6px;">Time</label>
+            <select id="tour-time" style="width:100%;padding:11px 14px;background:#151524;border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;outline:none;">
+              <option>10:00 AM Morning</option>
+              <option>01:30 PM Afternoon</option>
+              <option>04:00 PM Golden Hour</option>
+              <option>06:00 PM Twilight</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label style="font-size:.78rem;font-weight:600;color:var(--text-2);text-transform:uppercase;display:block;margin-bottom:6px;">Full Name *</label>
+            <input type="text" id="tour-name" required placeholder="Robert Harrison" style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;outline:none;" />
+          </div>
+          <div class="form-group">
+            <label style="font-size:.78rem;font-weight:600;color:var(--text-2);text-transform:uppercase;display:block;margin-bottom:6px;">Email *</label>
+            <input type="email" id="tour-email" required placeholder="robert@example.com" style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;outline:none;" />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:22px;">
+          <label style="font-size:.78rem;font-weight:600;color:var(--text-2);text-transform:uppercase;display:block;margin-bottom:6px;">Phone Number</label>
+          <input type="tel" id="tour-phone" placeholder="+1 (212) 555-0199" style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;outline:none;" />
+        </div>
+
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;padding:14px;font-size:0.95rem;">
+          Confirm Tour Reservation
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== SAVED PROPERTIES (FAVORITES) DRAWER ===== -->
+  <div class="fav-drawer-overlay" id="fav-drawer-overlay" onclick="handleFavOverlayClick(event)">
+    <div class="fav-drawer">
+      <div class="fav-drawer-header">
+        <h3 class="fav-drawer-title">♥ Saved Properties</h3>
+        <button class="lux-modal-close" style="position:static;" onclick="closeFavDrawer()" aria-label="Close drawer">✕</button>
+      </div>
+      <div class="fav-drawer-body" id="fav-drawer-items">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div class="lux-toast-container" id="lux-toasts" aria-live="polite"></div>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" id="back-to-top-btn" aria-label="Back to top">↑</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
